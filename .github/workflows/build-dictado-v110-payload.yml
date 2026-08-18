@@ -40,12 +40,22 @@ jobs:
       - name: Reconstruct source project
         shell: bash
         run: |
+          for f in dictado-build-payload/v110-part*.b64; do
+            echo "PAYLOAD $f"
+            wc -c "$f"
+            sha256sum "$f"
+          done
           cat dictado-build-payload/v110-part1.b64 \
               dictado-build-payload/v110-part2.b64 \
               dictado-build-payload/v110-part3.b64 \
               dictado-build-payload/v110-part4.b64 \
               dictado-build-payload/v110-part5.b64 \
-            | tr -d '\n' | base64 --decode > /tmp/DictadoPorComas-source-v1.1.0.zip
+            | tr -d '\n' > /tmp/DictadoPorComas-source-v1.1.0.b64
+          wc -c /tmp/DictadoPorComas-source-v1.1.0.b64
+          sha256sum /tmp/DictadoPorComas-source-v1.1.0.b64
+          base64 --decode /tmp/DictadoPorComas-source-v1.1.0.b64 > /tmp/DictadoPorComas-source-v1.1.0.zip
+          wc -c /tmp/DictadoPorComas-source-v1.1.0.zip
+          sha256sum /tmp/DictadoPorComas-source-v1.1.0.zip
           mkdir -p /tmp/dictado-v110
           unzip -q /tmp/DictadoPorComas-source-v1.1.0.zip -d /tmp/dictado-v110
           test -f /tmp/dictado-v110/dictado-por-comas/settings.gradle
