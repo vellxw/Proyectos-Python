@@ -32,7 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base64 --decode dictadito-build/dictadito_apk.tar.gz.b64 > /tmp/dictadito_apk.tar.gz
+          cat dictadito-build/chunks/part-* | base64 --decode > /tmp/dictadito_apk.tar.gz
           echo "ef1a1d98eb8cd4a6a84e05b13c1a84c350dde34635f0e9da978dd5ee96837022  /tmp/dictadito_apk.tar.gz" | sha256sum -c -
           tar -xzf /tmp/dictadito_apk.tar.gz
           test -f dictadito_apk/app/build.gradle
