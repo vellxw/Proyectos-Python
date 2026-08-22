@@ -1,0 +1,17 @@
+name: Dictadito public builder
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm GitHub runner
+        run: echo "DICTADITO_PUBLIC_RUNNER_OK"
