@@ -1,1 +1,1 @@
-Trigger Dictadito APK build after the Android payload and build workflow were installed.
+Trigger Dictadito APK build using the complete chunked Android source archive.
