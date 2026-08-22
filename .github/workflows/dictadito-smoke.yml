@@ -1,0 +1,13 @@
+name: Dictadito build host smoke
+
+on:
+  push:
+    branches:
+      - dictadito-build-host
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "public runner works"
