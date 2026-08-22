@@ -10,8 +10,48 @@ permissions:
   contents: read
 
 jobs:
-  smoke:
+  build-apk:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - name: Confirm GitHub runner
-        run: echo "DICTADITO_PUBLIC_RUNNER_OK"
+      - name: Check out build payload
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 8.11.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Restore Android project
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode dictadito-build/dictadito_apk.tar.gz.b64 > /tmp/dictadito_apk.tar.gz
+          echo "ef1a1d98eb8cd4a6a84e05b13c1a84c350dde34635f0e9da978dd5ee96837022  /tmp/dictadito_apk.tar.gz" | sha256sum -c -
+          tar -xzf /tmp/dictadito_apk.tar.gz
+          test -f dictadito_apk/app/build.gradle
+
+      - name: Build debug APK
+        run: gradle -p dictadito_apk --no-daemon --stacktrace :app:assembleDebug
+
+      - name: Verify APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s dictadito_apk/app/build/outputs/apk/debug/app-debug.apk
+          sha256sum dictadito_apk/app/build/outputs/apk/debug/app-debug.apk
+          cp dictadito_apk/app/build/outputs/apk/debug/app-debug.apk Dictadito-preview.apk
+
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dictadito-preview-apk
+          path: Dictadito-preview.apk
+          if-no-files-found: error
+          retention-days: 14
